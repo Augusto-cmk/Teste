@@ -1,6 +1,7 @@
-import os
-import keyboard
+import termcolor
 import sys
+import tty
+import termios
 
 class Menu:
     def __init__(self):
@@ -24,16 +25,15 @@ class Menu:
         self.main()
 
     def menu(self):
-        os.system("cls")
-        print("""
+        print(termcolor.colored("""
         ██████╗  ███████╗  ██╗
         ██╔══██╗ ██╔════╝  ██║
         ██████╔╝ ███████╗  ██║
         ██╔══██╗      ██║  ██║
         ██████╔╝ ███████║  ██║
         ╚═════╝  ╚══════╝  ╚═╝
-            """,end=" ")
-        print("""
+            """, "green"), end=" ")
+        print(termcolor.colored("""
                                           ██║
                                         ██║
             ██║ ╔████████╗  █████╗   ██╗   ██╗
@@ -42,49 +42,53 @@ class Menu:
             ██║     ██║    ██║  ██║  ██║   ██║
             ██║     ██║    ██║  ██║   ██████╔╝
             ╚═╝     ╚═╝    ╚═╝  ╚═╝   ╚═════╝ 
-            """)
+            """, "green"))
+
         for i, option in enumerate(self.options):
             if i == self.selected_option:
-                print(f"\033[1;37;42m[*] {option}\033[m")
+                print(termcolor.colored(f"[*] {option}", "white", "on_green"))
             else:
                 print(f"[ ] {option}")
 
     def main(self):
         while True:
             self.menu()
-            key = keyboard.read_event(suppress=True)
-            if key.event_type == keyboard.KEY_DOWN:
-                if key.name == "up":
-                    self.selected_option = (self.selected_option - 1) % len(self.options)
-                elif key.name == "down":
-                    self.selected_option = (self.selected_option + 1) % len(self.options)
-                elif key.name == "enter":
-                    self.fluxo[self.selected_option + 1]()
-                    input("Pressione Enter para voltar ao menu principal...")
-                    os.system("cls")
+            key = self.get_key()
+            if key == "up":
+                self.selected_option = (self.selected_option - 1) % len(self.options)
+            elif key == "down":
+                self.selected_option = (self.selected_option + 1) % len(self.options)
+            elif key == "enter":
+                self.fluxo[self.selected_option + 1]()
+                input("Pressione Enter para voltar ao menu principal...")
+
+    def get_key(self):
+        fd = sys.stdin.fileno()
+        old_settings = termios.tcgetattr(fd)
+        try:
+            tty.setraw(sys.stdin.fileno())
+            key = sys.stdin.read(1)
+        finally:
+            termios.tcsetattr(fd, termios.TCSADRAIN, old_settings)
+        return key
 
     def __crash_by_id(self):
-        os.system("cls")
         print("Executando Resolver crash pelo ID")
 
     def __crash(self):
-        os.system("cls")
         print("Executando Resolver crash TOP 50")
 
     def __bug(self):
-        os.system("cls")
         print("Executando Resolver um bug")
 
     def __crash_manual(self):
-        os.system("cls")
         print("Executando Resolver um crash manual")
 
     def __crash_ios_pf_auto(self):
-        os.system("cls")
         print("Executando Resolver crashes IOS PF automático")
 
     def __exit(self):
-        os.system("cls")
         print("Saindo do programa...")
         sys.exit(0)
+
 Menu()
