@@ -1,7 +1,7 @@
-import termcolor
 import sys
-import tty
-import termios
+import os
+import readchar
+
 
 class Menu:
     def __init__(self):
@@ -25,15 +25,16 @@ class Menu:
         self.main()
 
     def menu(self):
-        print(termcolor.colored("""
+        os.system("clear")
+        print("""
         ██████╗  ███████╗  ██╗
         ██╔══██╗ ██╔════╝  ██║
         ██████╔╝ ███████╗  ██║
         ██╔══██╗      ██║  ██║
         ██████╔╝ ███████║  ██║
         ╚═════╝  ╚══════╝  ╚═╝
-            """, "green"), end=" ")
-        print(termcolor.colored("""
+            """,end=" ")
+        print("""
                                           ██║
                                         ██║
             ██║ ╔████████╗  █████╗   ██╗   ██╗
@@ -42,53 +43,52 @@ class Menu:
             ██║     ██║    ██║  ██║  ██║   ██║
             ██║     ██║    ██║  ██║   ██████╔╝
             ╚═╝     ╚═╝    ╚═╝  ╚═╝   ╚═════╝ 
-            """, "green"))
-
+            """)
         for i, option in enumerate(self.options):
             if i == self.selected_option:
-                print(termcolor.colored(f"[*] {option}", "white", "on_green"))
+                print(f"\033[1;37;42m[*] {option}\033[m")
             else:
                 print(f"[ ] {option}")
 
     def main(self):
         while True:
             self.menu()
-            key = self.get_key()
-            if key == "up":
+            key = readchar.readchar()
+            if key == "w":
                 self.selected_option = (self.selected_option - 1) % len(self.options)
-            elif key == "down":
+            if key == "s":
                 self.selected_option = (self.selected_option + 1) % len(self.options)
-            elif key == "enter":
+            if key == "\n":
                 self.fluxo[self.selected_option + 1]()
-                input("Pressione Enter para voltar ao menu principal...")
-
-    def get_key(self):
-        fd = sys.stdin.fileno()
-        old_settings = termios.tcgetattr(fd)
-        try:
-            tty.setraw(sys.stdin.fileno())
-            key = sys.stdin.read(1)
-        finally:
-            termios.tcsetattr(fd, termios.TCSADRAIN, old_settings)
-        return key
 
     def __crash_by_id(self):
+        os.system("clear")
         print("Executando Resolver crash pelo ID")
+        input("Any -> Voltar ao menu principal")
 
     def __crash(self):
+        os.system("clear")
         print("Executando Resolver crash TOP 50")
+        input("Any -> Voltar ao menu principal")
 
     def __bug(self):
+        os.system("clear")
         print("Executando Resolver um bug")
+        input("Any -> Voltar ao menu principal")
 
     def __crash_manual(self):
+        os.system("clear")
         print("Executando Resolver um crash manual")
+        input("Any -> Voltar ao menu principal")
 
     def __crash_ios_pf_auto(self):
+        os.system("clear")
         print("Executando Resolver crashes IOS PF automático")
+        input("Any -> Voltar ao menu principal")
 
     def __exit(self):
         print("Saindo do programa...")
         sys.exit(0)
+
 
 Menu()
